@@ -1,47 +1,20 @@
 ---------------------------------------------------------------------------------------------------
-Version: 0.3.1
+Version: 1.0.0
 Date: 2025-10-26
-  Features:
+  Major Features:
+    - First stable release!
     - Transparent entities are now clickable/selectable unless transparency is set to 100%
-    - At 100% transparency (completely invisible), entities become non-selectable
-    - At any transparency below 100%, entities remain selectable for easier interaction
+    - At 100% transparency (completely invisible), entities become non-selectable for easy click-through
+    - Pipette tool (Q) now gives the normal non-transparent entity when used on transparent variants
   Changes:
-    - Rails and supports now check their respective transparency settings independently for selectability
+    - Rails and supports check their respective transparency settings independently for selectability
+    - Improved transparency application to ensure all graphics components are affected
   Bugfixes:
     - Fixed rail sprites on rail ramps not being fully transparent at 100% transparency
-
----------------------------------------------------------------------------------------------------
-Version: 0.3.0
-Date: 2025-10-25
-  Features:
-    - Added support for rail ramps - they now become transparent along with elevated rails
-    - Added support for rail supports - they now become transparent along with elevated rails
-    - Added separate "Support Transparency" setting to control rail ramps and supports independently from rails
-    - All three entity types (rails, ramps, supports) are controlled by the same toggle button
+    - Fixed elevated rail handles and body now properly respond to transparency settings
   Info:
-    - Rail transparency default: 50%
-    - Support transparency default: 75%
-    - Both settings require game restart to change
-
----------------------------------------------------------------------------------------------------
-Version: 0.2.0
-Date: 2025-10-25
-  Changes:
-    - Complete rewrite using entity replacement instead of rendering overlays
-    - Changed transparency setting from 0.0-1.0 to 0-100% for clarity
-    - Transparency is now a startup setting (requires game restart to change)
-    - Button now toggles ALL elevated rails on the map instantly
-    - Newly built rails automatically adopt current transparency state
-  Features:
-    - Added train-aware rail replacement (won't replace rails with trains, will retry automatically)
-    - Added proper handling of rail properties (deconstruction orders, quality, force)
-    - Transparent rails are now non-selectable to avoid confusion
-  Bugfixes:
-    - Fixed performance issues with large rail networks
-    - Fixed compatibility with other mods that modify rails
-  Info:
-    - Compatible with Factorio 2.0+
-    - Based on transparent-elevated-rails mod approach
+    - Added proper entity localization for all transparent variants
+    - Ready for Factorio Mod Portal release
 
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.0

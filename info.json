@@ -1,11 +1,11 @@
 {
   "name": "See-Through-Rails",
-  "version": "0.3.1",
+  "version": "1.0.0",
   "title": "See Through Rails",
   "author": "Ishai Picus",
-  "description": "Toggle all elevated rails, rail ramps, and rail supports transparency with a button. Set separate transparency levels (0-100%) for rails and supports in settings.",
+  "description": "Toggle transparency of elevated rails, rail ramps, and rail supports with a button. Configurable transparency levels (0-100%) for rails and supports. At 100% transparency, entities become non-selectable for easy click-through.",
   "factorio_version": "2.0",
-  "dependencies": ["base >= 2.0"],
+  "dependencies": ["base >= 2.0", "elevated-rails >= 2.0"],
   "license": "CC BY-NC 4.0",
-  "homepage": "https://github.com/ishaipicus/Factorio-Remove-Elevated-Rail-Sprite"
+  "homepage": "https://github.com/ishaipicus/Factorio-See-Through-Rails"
 }
