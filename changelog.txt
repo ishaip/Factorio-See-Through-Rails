@@ -7,6 +7,8 @@ Date: 2025-10-26
     - At any transparency below 100%, entities remain selectable for easier interaction
   Changes:
     - Rails and supports now check their respective transparency settings independently for selectability
+  Bugfixes:
+    - Fixed rail sprites on rail ramps not being fully transparent at 100% transparency
 
 ---------------------------------------------------------------------------------------------------
 Version: 0.3.0

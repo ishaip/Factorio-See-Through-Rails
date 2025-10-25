@@ -115,9 +115,13 @@ if data.raw["rail-ramp"] and data.raw["rail-ramp"]["rail-ramp"] then
     local transparent_ramp = table.deepcopy(ramp_prototype)
     transparent_ramp.name = "transparent-rail-ramp"
     
-    -- Apply transparency tint recursively to all graphics
-    apply_tint_recursive(transparent_ramp.pictures, support_tint)
-    apply_tint_recursive(transparent_ramp.frozen_patch, support_tint)
+    -- Apply transparency tint recursively to ALL properties
+    -- This ensures we catch every possible graphics property including handles
+    for key, value in pairs(transparent_ramp) do
+        if type(value) == "table" and key ~= "name" and key ~= "type" then
+            apply_tint_recursive(value, support_tint)
+        end
+    end
     
     -- Set selectability based on transparency
     transparent_ramp.selectable_in_game = support_selectable
