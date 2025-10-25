@@ -20,5 +20,16 @@ data:extend({
         order = "b",
         localised_name = {"mod-setting-name.support-transparency"},
         localised_description = {"mod-setting-description.support-transparency"}
+    },
+    {
+        type = "int-setting",
+        name = "selection-box-size",
+        setting_type = "startup",
+        minimum_value = 0,
+        maximum_value = 100,
+        default_value = 50,
+        order = "c",
+        localised_name = {"mod-setting-name.selection-box-size"},
+        localised_description = {"mod-setting-description.selection-box-size"}
     }
 })
