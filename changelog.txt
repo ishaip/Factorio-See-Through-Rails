@@ -1,19 +1,14 @@
 ---------------------------------------------------------------------------------------------------
-Version: 0.3.2
-Date: 2025-10-25
-  Features:
-    - Added "Selection Box Size" setting (0-100%) to control how large the selection box is for transparent entities
-    - 0% = no selection box (not clickable), 50% = half size (default), 100% = full size
-    - This allows you to customize how easy it is to click through transparent structures
-
----------------------------------------------------------------------------------------------------
 Version: 0.3.1
-Date: 2025-10-25
+Date: 2025-10-26
+  Features:
+    - Transparent entities are now clickable/selectable unless transparency is set to 100%
+    - At 100% transparency (completely invisible), entities become non-selectable
+    - At any transparency below 100%, entities remain selectable for easier interaction
   Changes:
-    - Transparent rails, ramps, and supports are now selectable
-    - Selection boxes are 50% smaller when transparent to make clicking through easier
+    - Rails and supports now check their respective transparency settings independently for selectability
   Bugfixes:
-    - Fixed crash when toggling transparency on rail ramps and supports
+    - Fixed rail sprites on rail ramps not being fully transparent at 100% transparency
 
 ---------------------------------------------------------------------------------------------------
 Version: 0.3.0
