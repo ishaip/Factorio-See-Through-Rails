@@ -1,2 +1,2 @@
--- Data final fixes not needed for this mod
--- We use runtime rendering overlays instead of modifying prototypes
+-- Data final fixes - ensures our transparent rail variants are created after all other mods
+-- This helps ensure compatibility with mods that modify elevated rails

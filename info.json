@@ -1,9 +1,9 @@
 {
-  "name": "factorio-elevated-rail-transparency",
-  "version": "0.1.0",
-  "title": "Elevated Rail Transparency",
+  "name": "See-Through-Rails",
+  "version": "0.2.0",
+  "title": "See Through Rails",
   "author": "Ishai Picus",
-  "description": "Toggle elevated rail transparency with a button to see underneath elevated rails while maintaining functionality",
+  "description": "Toggle all elevated rails transparency with a button. Set transparency level (0-100%) in settings. All rails on the map change instantly when toggled.",
   "factorio_version": "2.0",
   "dependencies": ["base >= 2.0"],
   "license": "CC BY-NC 4.0",

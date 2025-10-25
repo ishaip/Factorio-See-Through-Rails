@@ -1,11 +1,13 @@
 data:extend({
     {
-        type = "double-setting",
-        name = "sprite_transparent",
-        setting_type = "runtime-global",
-        default_value = 0.3,
-        minimum_value = 0.0,
-        maximum_value = 1.0,
-        order = "a"
+        type = "int-setting",
+        name = "rail-transparency",
+        setting_type = "startup",
+        minimum_value = 0,
+        maximum_value = 100,
+        default_value = 50,
+        order = "a",
+        localised_name = {"mod-setting-name.rail-transparency"},
+        localised_description = {"mod-setting-description.rail-transparency"}
     }
 })

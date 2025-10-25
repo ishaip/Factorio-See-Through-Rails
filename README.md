@@ -1,22 +1,27 @@
 # Elevated Rail Transparency
 
 ## Overview
-This Factorio mod allows players to toggle the transparency of elevated rails with the press of a button. When enabled, elevated rails become more transparent, making it easier to see what's underneath them while maintaining their functionality.
+This Factorio mod allows players to toggle the transparency of elevated rails with the press of a button. When enabled, all elevated rails on the map are replaced with transparent variants, making it easier to see what's underneath them while maintaining their functionality.
 
 ## Features
-- **One-click toggle**: Use the shortcut button in the toolbar to instantly toggle elevated rail transparency
-- **Customizable transparency**: Adjust the transparency level in mod settings (0.0 = invisible, 1.0 = opaque)
-- **Per-player setting**: Each player can toggle transparency independently in multiplayer
-- **Visual feedback**: Chat messages confirm when transparency is enabled or disabled
+- **One-click toggle**: Use the shortcut button in the toolbar to instantly toggle all elevated rail transparency across the entire map
+- **Customizable transparency**: Adjust the transparency level from 0-100% in startup mod settings (0% = fully transparent/invisible, 100% = fully opaque/normal)
+- **Global effect**: When you click the button, ALL elevated rails on the map change transparency instantly
+- **Automatic handling**: Newly built rails automatically adopt the current transparency state
+- **Train-aware**: Won't replace rails with trains on them - will retry automatically when safe
 
 ## Usage
-1. Install the mod
+1. Install the mod and configure transparency level in Settings > Mod Settings > Startup (requires game restart after changes)
 2. Look for the rail icon shortcut button in your toolbar
-3. Click the button to toggle elevated rail transparency on/off
-4. Adjust transparency level in Settings > Mod Settings > Runtime (Global)
+3. Click the button to toggle all elevated rails between transparent and normal states
+4. All elevated rails on the map will change transparency immediately
 
 ## Settings
-- **Rail Transparency Level**: Controls how transparent elevated rails become (default: 0.3)
+- **Rail Transparency**: Controls how transparent elevated rails become when transparency is enabled (0-100%, default: 50%)
+  - 0% = Completely invisible
+  - 50% = Half transparent (default)
+  - 100% = Completely opaque (same as normal rails)
+  - **Note**: This is a startup setting - you must restart the game for changes to take effect
 
 ## Requirements
 - Factorio 2.0+
@@ -29,11 +34,13 @@ This Factorio mod allows players to toggle the transparency of elevated rails wi
    - Linux: `~/.factorio/mods`
 3. Launch Factorio and enable the mod in the mod settings menu
 
-## Configuration
-- The transparency percentage can be adjusted in the mod settings. Look for "Rail Transparency Level" to set your desired level of transparency (0.0 = invisible, 1.0 = opaque)
+## How It Works
+The mod creates transparent versions of all elevated rail types and replaces them when you toggle the button. The transparency level is baked into the rail sprites at startup based on your setting.
 
 ## Compatibility
-This mod is designed to work with the latest version of Factorio. Ensure that your game is updated to the latest version for optimal performance.
+This mod is designed to work with Factorio 2.0+. It should be compatible with most other mods that don't heavily modify elevated rail entities.
 
 ## Acknowledgments
-Thanks to the Factorio community for their support and feedback during the development of this mod. Enjoy your enhanced factory experience!
+Inspired by the transparent-elevated-rails mod. Thanks to the Factorio community for their support and feedback!
+
+Enjoy your enhanced factory experience!

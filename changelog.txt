@@ -1,4 +1,24 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.0
+Date: 2025-10-25
+  Changes:
+    - Complete rewrite using entity replacement instead of rendering overlays
+    - Changed transparency setting from 0.0-1.0 to 0-100% for clarity
+    - Transparency is now a startup setting (requires game restart to change)
+    - Button now toggles ALL elevated rails on the map instantly
+    - Newly built rails automatically adopt current transparency state
+  Features:
+    - Added train-aware rail replacement (won't replace rails with trains, will retry automatically)
+    - Added proper handling of rail properties (deconstruction orders, quality, force)
+    - Transparent rails are now non-selectable to avoid confusion
+  Bugfixes:
+    - Fixed performance issues with large rail networks
+    - Fixed compatibility with other mods that modify rails
+  Info:
+    - Compatible with Factorio 2.0+
+    - Based on transparent-elevated-rails mod approach
+
+---------------------------------------------------------------------------------------------------
 Version: 0.1.0
 Date: 2025-06-08
   Features:
