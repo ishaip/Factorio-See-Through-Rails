@@ -102,6 +102,9 @@ for _, rail_name in pairs(elevated_rail_types) do
         transparent_rail.fence_pictures = nil
         transparent_rail.selectable_in_game = rail_selectable
         
+        -- Make pipette tool give the normal rail instead of transparent variant
+        transparent_rail.placeable_by = {item = rail_prototype.placeable_by.item or rail_name, count = 1}
+        
         -- Extend data with the transparent variant
         data:extend({transparent_rail})
     else
@@ -126,6 +129,9 @@ if data.raw["rail-ramp"] and data.raw["rail-ramp"]["rail-ramp"] then
     -- Set selectability based on transparency
     transparent_ramp.selectable_in_game = support_selectable
     
+    -- Make pipette tool give the normal rail-ramp instead of transparent variant
+    transparent_ramp.placeable_by = {item = "rail-ramp", count = 1}
+    
     data:extend({transparent_ramp})
 else
     log("Warning: Could not find rail-ramp prototype")
@@ -143,6 +149,9 @@ if data.raw["rail-support"] and data.raw["rail-support"]["rail-support"] then
     
     -- Set selectability based on transparency
     transparent_support.selectable_in_game = support_selectable
+    
+    -- Make pipette tool give the normal rail-support instead of transparent variant
+    transparent_support.placeable_by = {item = "rail-support", count = 1}
     
     data:extend({transparent_support})
 else
