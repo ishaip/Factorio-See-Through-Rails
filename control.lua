@@ -6,6 +6,34 @@ local elevated_rail_types = {
     "elevated-half-diagonal-rail"
 }
 
+-- Helper function to get base entity name (removes "transparent-" prefix)
+local function get_base_name(name)
+    return name:gsub("^transparent%-", "")
+end
+
+-- Helper function to check if entity is handled by this mod
+local function is_handled_entity(entity)
+    if not entity or not entity.valid then
+        return false
+    end
+    
+    local base_name = get_base_name(entity.name)
+    
+    -- Check if it's an elevated rail
+    for _, rail_type in pairs(elevated_rail_types) do
+        if base_name == rail_type then
+            return true
+        end
+    end
+    
+    -- Check if it's a rail-ramp or rail-support
+    if base_name == "rail-ramp" or base_name == "rail-support" then
+        return true
+    end
+    
+    return false
+end
+
 -- Helper function to check if a value exists in an array
 local function array_has_value(array, value)
     for _, item in pairs(array) do
@@ -36,19 +64,28 @@ script.on_init(function()
     init()
 end)
 
--- Function to replace a single rail entity with its transparent/normal variant
+-- Function to replace a single entity with its transparent/normal variant
 local function replace_rail(surface, entity, to_transparent, retry)
     if not entity or not entity.valid then
         return
     end
     
-    -- Check if entity is an elevated rail
-    if not array_has_value(elevated_rail_types, entity.name:gsub("transparent%-", "")) then
+    -- Check if entity is one we handle
+    if not is_handled_entity(entity) then
         return
     end
     
-    -- Don't replace if trains are in the rail block
-    if entity.trains_in_block > 0 then
+    -- Don't replace rails if trains are in the rail block (only applies to rails, not ramps/supports)
+    local base_name = get_base_name(entity.name)
+    local is_rail = false
+    for _, rail_type in pairs(elevated_rail_types) do
+        if base_name == rail_type then
+            is_rail = true
+            break
+        end
+    end
+    
+    if is_rail and entity.trains_in_block and entity.trains_in_block > 0 then
         -- Schedule retry
         if not storage.retry_on_tick then
             init()
@@ -113,15 +150,14 @@ local function replace_rail(surface, entity, to_transparent, retry)
     end
 end
 
--- Function to toggle transparency for all elevated rails on all surfaces
+-- Function to toggle transparency for all elevated rails, ramps, and supports on all surfaces
 local function toggle_all_rails()
     storage.rails_transparent = not storage.rails_transparent
     local to_transparent = storage.rails_transparent
     
     -- Process all surfaces
     for _, surface in pairs(game.surfaces) do
-        -- Find all elevated rails by type (both normal and transparent variants)
-        local all_rails = {}
+        local all_entities = {}
         
         -- Search for each rail type
         local rail_types = {
@@ -136,13 +172,29 @@ local function toggle_all_rails()
                 type = rail_type
             }
             for _, rail in pairs(rails) do
-                table.insert(all_rails, rail)
+                table.insert(all_entities, rail)
             end
         end
         
-        -- Replace each rail
-        for _, rail in pairs(all_rails) do
-            replace_rail(surface, rail, to_transparent)
+        -- Search for rail ramps
+        local ramps = surface.find_entities_filtered{
+            type = "rail-ramp"
+        }
+        for _, ramp in pairs(ramps) do
+            table.insert(all_entities, ramp)
+        end
+        
+        -- Search for rail supports
+        local supports = surface.find_entities_filtered{
+            type = "rail-support"
+        }
+        for _, support in pairs(supports) do
+            table.insert(all_entities, support)
+        end
+        
+        -- Replace each entity
+        for _, entity in pairs(all_entities) do
+            replace_rail(surface, entity, to_transparent)
         end
     end
     
@@ -194,7 +246,7 @@ script.on_event(defines.events.on_player_created, function(event)
     end
 end)
 
--- Handle newly built elevated rails
+-- Handle newly built elevated rails, ramps, and supports
 local function on_rail_built(event)
     if not storage.rails_transparent then
         return
@@ -205,8 +257,8 @@ local function on_rail_built(event)
         return
     end
     
-    -- Check if it's an elevated rail
-    if array_has_value(elevated_rail_types, entity.name) then
+    -- Check if it's an entity we handle
+    if is_handled_entity(entity) then
         replace_rail(entity.surface, entity, true)
     end
 end

@@ -1,4 +1,17 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.0
+Date: 2025-10-25
+  Features:
+    - Added support for rail ramps - they now become transparent along with elevated rails
+    - Added support for rail supports - they now become transparent along with elevated rails
+    - Added separate "Support Transparency" setting to control rail ramps and supports independently from rails
+    - All three entity types (rails, ramps, supports) are controlled by the same toggle button
+  Info:
+    - Rail transparency default: 50%
+    - Support transparency default: 75%
+    - Both settings require game restart to change
+
+---------------------------------------------------------------------------------------------------
 Version: 0.2.0
 Date: 2025-10-25
   Changes:

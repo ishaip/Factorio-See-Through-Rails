@@ -1,9 +1,9 @@
 {
   "name": "See-Through-Rails",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "title": "See Through Rails",
   "author": "Ishai Picus",
-  "description": "Toggle all elevated rails transparency with a button. Set transparency level (0-100%) in settings. All rails on the map change instantly when toggled.",
+  "description": "Toggle all elevated rails, rail ramps, and rail supports transparency with a button. Set separate transparency levels (0-100%) for rails and supports in settings.",
   "factorio_version": "2.0",
   "dependencies": ["base >= 2.0"],
   "license": "CC BY-NC 4.0",
