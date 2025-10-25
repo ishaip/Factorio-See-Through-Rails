@@ -25,10 +25,12 @@ local picture_components = {
 local rail_transparency_percent = settings.startup["rail-transparency"].value
 local rail_alpha = (100 - rail_transparency_percent) / 100
 local rail_tint = {rail_alpha, rail_alpha, rail_alpha, rail_alpha}
+local rail_selectable = (rail_transparency_percent < 100)
 
 local support_transparency_percent = settings.startup["support-transparency"].value
 local support_alpha = (100 - support_transparency_percent) / 100
 local support_tint = {support_alpha, support_alpha, support_alpha, support_alpha}
+local support_selectable = (support_transparency_percent < 100)
 
 -- Helper function to apply tint recursively to any structure
 local function apply_tint_recursive(obj, tint)
@@ -96,9 +98,9 @@ for _, rail_name in pairs(elevated_rail_types) do
             end
         end
         
-        -- Remove fence pictures and make non-selectable
+        -- Remove fence pictures and set selectability based on transparency
         transparent_rail.fence_pictures = nil
-        transparent_rail.selectable_in_game = false
+        transparent_rail.selectable_in_game = rail_selectable
         
         -- Extend data with the transparent variant
         data:extend({transparent_rail})
@@ -117,8 +119,8 @@ if data.raw["rail-ramp"] and data.raw["rail-ramp"]["rail-ramp"] then
     apply_tint_recursive(transparent_ramp.pictures, support_tint)
     apply_tint_recursive(transparent_ramp.frozen_patch, support_tint)
     
-    -- Make non-selectable
-    transparent_ramp.selectable_in_game = false
+    -- Set selectability based on transparency
+    transparent_ramp.selectable_in_game = support_selectable
     
     data:extend({transparent_ramp})
 else
@@ -135,8 +137,8 @@ if data.raw["rail-support"] and data.raw["rail-support"]["rail-support"] then
     apply_tint_recursive(transparent_support.pictures, support_tint)
     apply_tint_recursive(transparent_support.graphics_set, support_tint)
     
-    -- Make non-selectable
-    transparent_support.selectable_in_game = false
+    -- Set selectability based on transparency
+    transparent_support.selectable_in_game = support_selectable
     
     data:extend({transparent_support})
 else
