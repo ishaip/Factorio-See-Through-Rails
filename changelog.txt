@@ -1,4 +1,16 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.1
+Date: 2025-10-26
+  Features:
+    - Transparent entities are now clickable/selectable unless transparency is set to 100%
+    - At 100% transparency (completely invisible), entities become non-selectable
+    - At any transparency below 100%, entities remain selectable for easier interaction
+  Changes:
+    - Rails and supports now check their respective transparency settings independently for selectability
+  Bugfixes:
+    - Fixed rail sprites on rail ramps not being fully transparent at 100% transparency
+
+---------------------------------------------------------------------------------------------------
 Version: 0.3.0
 Date: 2025-10-25
   Features:
