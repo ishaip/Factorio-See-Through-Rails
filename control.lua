@@ -257,6 +257,37 @@ local function on_rail_built(event)
         return
     end
     
+    -- Handle ghost entities (blueprints, copy-paste, etc)
+    if entity.name == "entity-ghost" then
+        local ghost_name = entity.ghost_name
+        
+        -- Check if this is a transparent variant ghost
+        if ghost_name and ghost_name:find("^transparent%-") then
+            -- Replace with normal (non-transparent) ghost
+            local normal_name = ghost_name:gsub("^transparent%-", "")
+            local surface = entity.surface
+            local position = entity.position
+            local force = entity.force
+            local direction = entity.direction
+            local quality = entity.quality
+            local player_index = event.player_index
+            
+            entity.destroy()
+            
+            surface.create_entity{
+                name = "entity-ghost",
+                inner_name = normal_name,
+                position = position,
+                force = force,
+                direction = direction,
+                quality = quality,
+                player = player_index,
+                create_build_effect_smoke = false
+            }
+        end
+        return
+    end
+    
     -- Check if it's an entity we handle
     if is_handled_entity(entity) then
         replace_rail(entity.surface, entity, true)
