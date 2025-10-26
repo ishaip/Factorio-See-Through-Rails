@@ -85,23 +85,73 @@ local function replace_rail(surface, entity, to_transparent, retry)
         end
     end
     
-    if is_rail and entity.trains_in_block and entity.trains_in_block > 0 then
-        -- Schedule retry
-        if not storage.retry_on_tick then
-            init()
-        end
-        local retry_tick = game.tick + 60 -- Retry in 1 second
-        if not storage.retry_on_tick[retry_tick] then
-            storage.retry_on_tick[retry_tick] = {}
-        end
-        local retry_data = {
-            surface = surface,
-            entity = entity,
-            to_transparent = to_transparent,
-            retry = (retry or 0) + 1
+    -- Check for trains on rails - use a larger search radius to catch trains on connected rails
+    if is_rail then
+        -- Check if there are any trains within a reasonable radius (to catch long trains)
+        local nearby_trains = surface.find_entities_filtered{
+            position = entity.position,
+            radius = 2,
+            type = "locomotive"
         }
-        table.insert(storage.retry_on_tick[retry_tick], retry_data)
-        return
+        
+        -- Also check cargo wagons and artillery wagons
+        local nearby_wagons = surface.find_entities_filtered{
+            position = entity.position,
+            radius = 2,
+            type = {"cargo-wagon", "fluid-wagon", "artillery-wagon"}
+        }
+        
+        if #nearby_trains > 0 or #nearby_wagons > 0 then
+            -- Schedule retry
+            if not storage.retry_on_tick then
+                init()
+            end
+            local retry_tick = game.tick + 60 -- Retry in 1 second
+            if not storage.retry_on_tick[retry_tick] then
+                storage.retry_on_tick[retry_tick] = {}
+            end
+            local retry_data = {
+                surface = surface,
+                entity = entity,
+                to_transparent = to_transparent,
+                retry = (retry or 0) + 1
+            }
+            table.insert(storage.retry_on_tick[retry_tick], retry_data)
+            return
+        end
+    end
+    
+    -- Check for trains near rail ramps (within 5 tiles)
+    if base_name == "rail-ramp" then
+        local nearby_trains = surface.find_entities_filtered{
+            position = entity.position,
+            radius = 10,
+            type = "locomotive"
+        }
+        local nearby_wagons = surface.find_entities_filtered{
+            position = entity.position,
+            radius = 10,
+            type = {"cargo-wagon", "fluid-wagon", "artillery-wagon"}
+        }
+        
+        if #nearby_trains > 0 or #nearby_wagons > 0 then
+            -- Schedule retry for ramp too
+            if not storage.retry_on_tick then
+                init()
+            end
+            local retry_tick = game.tick + 60
+            if not storage.retry_on_tick[retry_tick] then
+                storage.retry_on_tick[retry_tick] = {}
+            end
+            local retry_data = {
+                surface = surface,
+                entity = entity,
+                to_transparent = to_transparent,
+                retry = (retry or 0) + 1
+            }
+            table.insert(storage.retry_on_tick[retry_tick], retry_data)
+            return
+        end
     end
     
     -- Determine the new name
