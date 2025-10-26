@@ -98,11 +98,23 @@ for _, rail_name in pairs(elevated_rail_types) do
             end
         end
         
-        -- Remove fence pictures and set selectability based on transparency
-        transparent_rail.fence_pictures = nil
+        -- Make fence pictures transparent instead of removing them
+        if transparent_rail.fence_pictures then
+            apply_tint_recursive(transparent_rail.fence_pictures, rail_tint)
+        end
+        
+        -- Apply tint to ALL other table properties to catch rail endings and any other graphics
+        -- This is a brute force approach that ensures nothing is missed
+        for key, value in pairs(transparent_rail) do
+            if type(value) == "table" and key ~= "name" and key ~= "type" then
+                apply_tint_recursive(value, rail_tint)
+            end
+        end
+        
+        -- Set selectability based on transparency
         transparent_rail.selectable_in_game = rail_selectable
         
-        -- Make pipette tool give the normal rail instead of transparent variant
+        -- Make pipette tool give the normal rail instead of transparent variant (set AFTER tinting)
         transparent_rail.placeable_by = {item = rail_prototype.placeable_by.item or rail_name, count = 1}
         
         -- Extend data with the transparent variant
