@@ -196,6 +196,64 @@ local function toggle_all_rails()
         for _, entity in pairs(all_entities) do
             replace_rail(surface, entity, to_transparent)
         end
+        
+        -- Also handle ghosts
+        local ghosts = surface.find_entities_filtered{
+            name = "entity-ghost"
+        }
+        for _, ghost in pairs(ghosts) do
+            local ghost_name = ghost.ghost_name
+            local is_our_ghost = false
+            
+            -- Check if it's one of our entity types
+            for _, rail_type in pairs(elevated_rail_types) do
+                if ghost_name == rail_type or ghost_name == "transparent-" .. rail_type then
+                    is_our_ghost = true
+                    break
+                end
+            end
+            
+            if not is_our_ghost then
+                if ghost_name == "rail-ramp" or ghost_name == "transparent-rail-ramp" or
+                   ghost_name == "rail-support" or ghost_name == "transparent-rail-support" then
+                    is_our_ghost = true
+                end
+            end
+            
+            if is_our_ghost then
+                local target_name
+                if to_transparent then
+                    -- Convert to transparent ghost
+                    if not ghost_name:find("^transparent%-") then
+                        target_name = "transparent-" .. ghost_name
+                    end
+                else
+                    -- Convert to normal ghost
+                    if ghost_name:find("^transparent%-") then
+                        target_name = ghost_name:gsub("^transparent%-", "")
+                    end
+                end
+                
+                if target_name then
+                    local position = ghost.position
+                    local force = ghost.force
+                    local direction = ghost.direction
+                    local quality = ghost.quality
+                    
+                    ghost.destroy()
+                    
+                    surface.create_entity{
+                        name = "entity-ghost",
+                        inner_name = target_name,
+                        position = position,
+                        force = force,
+                        direction = direction,
+                        quality = quality,
+                        create_build_effect_smoke = false
+                    }
+                end
+            end
+        end
     end
     
     -- Update all player shortcut toggle states
@@ -246,8 +304,8 @@ script.on_event(defines.events.on_player_created, function(event)
     end
 end)
 
--- Handle newly built elevated rails, ramps, and supports
-local function on_rail_built(event)
+-- Handle newly built entities and ghosts
+local function on_entity_built(event)
     if not storage.rails_transparent then
         return
     end
@@ -257,12 +315,53 @@ local function on_rail_built(event)
         return
     end
     
-    -- Check if it's an entity we handle
-    if is_handled_entity(entity) then
+    -- Handle ghost entities (blueprints, copy-paste, etc)
+    if entity.name == "entity-ghost" then
+        local ghost_name = entity.ghost_name
+        
+        -- Check if this is a rail entity we handle
+        local should_replace = false
+        for _, rail_type in pairs(elevated_rail_types) do
+            if ghost_name == rail_type then
+                should_replace = true
+                break
+            end
+        end
+        
+        if not should_replace then
+            if ghost_name == "rail-ramp" or ghost_name == "rail-support" then
+                should_replace = true
+            end
+        end
+        
+        if should_replace then
+            -- Replace with transparent variant ghost
+            local surface = entity.surface
+            local position = entity.position
+            local force = entity.force
+            local direction = entity.direction
+            local quality = entity.quality
+            local player_index = event.player_index
+            
+            entity.destroy()
+            
+            surface.create_entity{
+                name = "entity-ghost",
+                inner_name = "transparent-" .. ghost_name,
+                position = position,
+                force = force,
+                direction = direction,
+                quality = quality,
+                player = player_index,
+                create_build_effect_smoke = false
+            }
+        end
+    -- Handle actual entities
+    elseif is_handled_entity(entity) then
         replace_rail(entity.surface, entity, true)
     end
 end
 
-script.on_event(defines.events.on_built_entity, on_rail_built)
-script.on_event(defines.events.on_robot_built_entity, on_rail_built)
-script.on_event(defines.events.script_raised_built, on_rail_built)
+script.on_event(defines.events.on_built_entity, on_entity_built)
+script.on_event(defines.events.on_robot_built_entity, on_entity_built)
+script.on_event(defines.events.script_raised_built, on_entity_built)
