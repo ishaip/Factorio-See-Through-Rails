@@ -62,5 +62,16 @@ echo Copying to Factorio mods folder...
 copy /Y "!zipname!" "%target%\!zipname!" > nul
 
 echo Deployment complete: !zipname! copied to %target%
-pause
+
+REM Launch Factorio
+set factorio_exe=C:\Program Files (x86)\Steam\steamapps\common\Factorio\bin\x64\factorio.exe
+if exist "!factorio_exe!" (
+    echo Launching Factorio...
+    start "" "!factorio_exe!"
+) else (
+    echo Warning: Factorio executable not found at: !factorio_exe!
+    echo Please launch Factorio manually.
+    pause
+)
+
 endlocal
