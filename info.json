@@ -1,6 +1,6 @@
 {
   "name": "See-Through-Rails",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "title": "See Through Rails",
   "author": "Ishai Picus",
   "description": "Toggle transparency of elevated rails, rail ramps, and rail supports with a button. Configurable transparency levels (0-100%) for rails and supports. At 100% transparency, entities become non-selectable for easy click-through.",
