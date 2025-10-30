@@ -5,7 +5,7 @@ data:extend({
         setting_type = "startup",
         minimum_value = 0,
         maximum_value = 100,
-        default_value = 50,
+        default_value = 75,
         order = "a",
         localised_name = {"mod-setting-name.rail-transparency"},
         localised_description = {"mod-setting-description.rail-transparency"}
@@ -16,7 +16,7 @@ data:extend({
         setting_type = "startup",
         minimum_value = 0,
         maximum_value = 100,
-        default_value = 25,
+        default_value = 40,
         order = "b",
         localised_name = {"mod-setting-name.support-transparency"},
         localised_description = {"mod-setting-description.support-transparency"}

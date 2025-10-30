@@ -49,8 +49,11 @@ local function init()
     if not storage.rails_transparent then
         storage.rails_transparent = false
     end
-    if not storage.retry_on_tick then
-        storage.retry_on_tick = {}
+    if not storage.retry_queue then
+        storage.retry_queue = {}
+    end
+    if not storage.next_retry_tick then
+        storage.next_retry_tick = nil
     end
 end
 
@@ -75,7 +78,6 @@ local function replace_rail(surface, entity, to_transparent, retry)
         return
     end
     
-    -- Don't replace rails if trains are in the rail block (only applies to rails, not ramps/supports)
     local base_name = get_base_name(entity.name)
     local is_rail = false
     for _, rail_type in pairs(elevated_rail_types) do
@@ -85,49 +87,14 @@ local function replace_rail(surface, entity, to_transparent, retry)
         end
     end
     
-    -- Check for trains on rails - use a larger search radius to catch trains on connected rails
-    if is_rail then
-        -- Check if there are any trains within a reasonable radius (to catch long trains)
-        local nearby_trains = surface.find_entities_filtered{
-            position = entity.position,
-            radius = 2,
-            type = "locomotive"
-        }
-        
-        -- Also check cargo wagons and artillery wagons
-        local nearby_wagons = surface.find_entities_filtered{
-            position = entity.position,
-            radius = 2,
-            type = {"cargo-wagon", "fluid-wagon", "artillery-wagon"}
-        }
-        
-        if #nearby_trains > 0 or #nearby_wagons > 0 then
-            -- Schedule retry
-            if not storage.retry_on_tick then
-                init()
-            end
-            local retry_tick = game.tick + 60 -- Retry in 1 second
-            if not storage.retry_on_tick[retry_tick] then
-                storage.retry_on_tick[retry_tick] = {}
-            end
-            local retry_data = {
-                surface = surface,
-                entity = entity,
-                to_transparent = to_transparent,
-                retry = (retry or 0) + 1
-            }
-            table.insert(storage.retry_on_tick[retry_tick], retry_data)
-            return
-        end
-    end
-    
-    -- Check for trains near rail ramps (within 5 tiles)
-    if base_name == "rail-ramp" then
+    -- Check for trains nearby (both rails and ramps)
+    if is_rail or base_name == "rail-ramp" then
         local nearby_trains = surface.find_entities_filtered{
             position = entity.position,
             radius = 10,
             type = "locomotive"
         }
+        
         local nearby_wagons = surface.find_entities_filtered{
             position = entity.position,
             radius = 10,
@@ -135,21 +102,32 @@ local function replace_rail(surface, entity, to_transparent, retry)
         }
         
         if #nearby_trains > 0 or #nearby_wagons > 0 then
-            -- Schedule retry for ramp too
-            if not storage.retry_on_tick then
+            -- Add to retry queue instead of scheduling specific tick
+            if not storage.retry_queue then
                 init()
             end
-            local retry_tick = game.tick + 60
-            if not storage.retry_on_tick[retry_tick] then
-                storage.retry_on_tick[retry_tick] = {}
+            
+            -- Check if this entity is already in the queue
+            local already_queued = false
+            for _, queued in pairs(storage.retry_queue) do
+                if queued.entity == entity then
+                    already_queued = true
+                    break
+                end
             end
-            local retry_data = {
-                surface = surface,
-                entity = entity,
-                to_transparent = to_transparent,
-                retry = (retry or 0) + 1
-            }
-            table.insert(storage.retry_on_tick[retry_tick], retry_data)
+            
+            if not already_queued then
+                table.insert(storage.retry_queue, {
+                    surface = surface,
+                    entity = entity,
+                    to_transparent = to_transparent
+                })
+                
+                -- Set next retry tick only if not already set and queue now has items
+                if not storage.next_retry_tick and #storage.retry_queue > 0 then
+                    storage.next_retry_tick = game.tick + 120 -- Check in 2 seconds
+                end
+            end
             return
         end
     end
@@ -270,21 +248,55 @@ end)
 
 -- Handle retries for rails that had trains blocking
 script.on_event(defines.events.on_tick, function(event)
-    if not storage.retry_on_tick then
-        init()
+    if not storage.retry_queue or #storage.retry_queue == 0 then
+        storage.next_retry_tick = nil
         return
     end
     
-    if storage.retry_on_tick[event.tick] then
-        for _, retry_data in pairs(storage.retry_on_tick[event.tick]) do
-            if retry_data.entity and retry_data.entity.valid then
-                -- Only retry a limited number of times (15 retries = 15 seconds)
-                if not retry_data.retry or retry_data.retry < 15 then
-                    replace_rail(retry_data.surface, retry_data.entity, retry_data.to_transparent, retry_data.retry)
-                end
+    -- Only process retries at the scheduled tick
+    if not storage.next_retry_tick or event.tick < storage.next_retry_tick then
+        return
+    end
+    
+    -- Process all queued rails (batch processing)
+    local new_queue = {}
+    for _, retry_data in pairs(storage.retry_queue) do
+        if retry_data.entity and retry_data.entity.valid then
+            -- Try to replace the rail
+            local success = false
+            
+            -- Check if trains are still nearby
+            local base_name = get_base_name(retry_data.entity.name)
+            local nearby_trains = retry_data.surface.find_entities_filtered{
+                position = retry_data.entity.position,
+                radius = 10,
+                type = "locomotive"
+            }
+            local nearby_wagons = retry_data.surface.find_entities_filtered{
+                position = retry_data.entity.position,
+                radius = 10,
+                type = {"cargo-wagon", "fluid-wagon", "artillery-wagon"}
+            }
+            
+            if #nearby_trains == 0 and #nearby_wagons == 0 then
+                -- No trains nearby, safe to replace
+                replace_rail(retry_data.surface, retry_data.entity, retry_data.to_transparent, 0)
+                success = true
+            end
+            
+            -- If not successful, keep in queue
+            if not success then
+                table.insert(new_queue, retry_data)
             end
         end
-        storage.retry_on_tick[event.tick] = nil
+    end
+    
+    -- Update queue and schedule next check
+    storage.retry_queue = new_queue
+    if #storage.retry_queue > 0 then
+        storage.next_retry_tick = event.tick + 120 -- Check again in 2 seconds
+    else
+        storage.next_retry_tick = nil
     end
 end)
 
